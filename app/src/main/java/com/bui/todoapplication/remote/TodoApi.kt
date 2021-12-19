@@ -5,11 +5,11 @@ import com.bui.todoapplication.model.User
 import retrofit2.Call
 import retrofit2.http.GET
 
-interface AppApi {
+interface TodoApi {
 
     @GET("call")
-    fun callList(): Call<List<User>>
+    suspend fun callList(): List<User>
 
     @GET("buy")
-    fun buyList(): Call<List<Product>>
+    suspend fun buyList(): List<Product>
 }

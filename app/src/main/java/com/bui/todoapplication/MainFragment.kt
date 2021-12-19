@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -16,14 +15,12 @@ import com.bui.todoapplication.databinding.FragmentMainBinding
 import com.bui.todoapplication.model.Product
 import com.bui.todoapplication.model.User
 import com.bui.todoapplication.remote.ApiBuilder
-import com.bui.todoapplication.remote.AppApi
+import com.bui.todoapplication.remote.TodoApi
+import com.bui.todoapplication.widget.LoadingDialog
 import kotlinx.android.synthetic.main.fragment_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class MainFragment : Fragment(), View.OnClickListener {
     private final val TAG = MainFragment::class.java.simpleName
@@ -31,7 +28,6 @@ class MainFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentMainBinding? = null
 
     private val binding get() = _binding!!
-    private val service = ApiBuilder.buildService(AppApi::class.java)
     private val mainViewModel: MainViewModel by viewModels {
         ViewModelFactory(requireActivity().application)
     }
@@ -75,6 +71,10 @@ class MainFragment : Fragment(), View.OnClickListener {
         button_call_list.setOnClickListener(this)
         button_buy_list.setOnClickListener(this)
         button_sell_list.setOnClickListener(this)
+
+        mainViewModel.loading.observe(viewLifecycleOwner, Observer {
+            if (it) context?.let { it1 -> LoadingDialog.showLoading(it1) } else LoadingDialog.hideLoading()
+        })
     }
 
     override fun onClick(v: View?) {
@@ -87,45 +87,22 @@ class MainFragment : Fragment(), View.OnClickListener {
     }
 
     private fun callList() {
-        service.callList().enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                if (response.isSuccessful) {
-                    val users: List<User>? = response.body()
-                    Log.d(TAG, "List user ${users.toString()}")
-                    navigateToCall(users)
-                }
-            }
-
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Log.e(TAG, "Failure: ", t)
-            }
+        mainViewModel.callList().observe(this, Observer {
+            Log.d(TAG, "List user $it")
+            navigateToCall(it)
         })
     }
 
     private fun buyList() {
-        service.buyList().enqueue(object : Callback<List<Product>> {
-            override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
-                if (response.isSuccessful) {
-                    val products: List<Product>? = response.body()
-                    Log.d(TAG, "List product ${products.toString()}")
-                    products?.takeIf { it.isNotEmpty() }
-                        ?.let {
-                            mainViewModel.saveAll(it)
-                        }
-                    navigateToBuy(products)
-
-                }
-            }
-
-            override fun onFailure(call: Call<List<Product>>, t: Throwable) {
-                Log.e(TAG, "Failure: ", t)
-            }
-
+        mainViewModel.buyList().observe(this, Observer { it ->
+            Log.d(TAG, "List product $it")
+            mainViewModel.saveAll(it)
+            navigateToBuy(it)
         })
     }
 
     private fun sellList() {
-        mainViewModel.allProducts.observe(this, Observer {
+        mainViewModel.productsSaved.observe(this, Observer {
             Log.d(TAG, "List product in local ${it.toString()}")
             navigateToSell(it)
         })
@@ -144,25 +121,5 @@ class MainFragment : Fragment(), View.OnClickListener {
     private fun navigateToSell(products: List<Product>?) {
         val bundle = bundleOf(ARG_PRODUCTS_LOCAL to products)
         findNavController().navigate(R.id.action_mainFragment_to_toSellFragment, bundle, options)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MainFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

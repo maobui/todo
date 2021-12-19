@@ -1,20 +1,25 @@
 package com.bui.todoapplication
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.bui.todoapplication.local.TodoRoomDatabase
 import com.bui.todoapplication.model.Product
+import com.bui.todoapplication.model.User
+import com.bui.todoapplication.remote.ApiBuilder
+import com.bui.todoapplication.remote.TodoApi
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class MainViewModel(private val application: Application) : ViewModel() {
 
     private val database by lazy { TodoRoomDatabase.getDatabase(application) }
-    private val productRepository by lazy { ProductRepository(database.productDao()) }
+    private val service = ApiBuilder.buildService(TodoApi::class.java)
+    private val productRepository by lazy { ProductRepository(database.productDao(), service) }
+    private val _loading = MutableLiveData<Boolean>()
 
-    val allProducts: LiveData<List<Product>> = productRepository.allProducts.asLiveData()
+    val loading: MutableLiveData<Boolean>
+        get() = _loading
+    val productsSaved: LiveData<List<Product>> = productRepository.productsSaved.asLiveData()
 
     fun save(product: Product) = viewModelScope.launch {
         productRepository.save(product)
@@ -22,5 +27,38 @@ class MainViewModel(private val application: Application) : ViewModel() {
 
     fun saveAll(products: List<Product>) = viewModelScope.launch {
         productRepository.saveAll(products)
+    }
+
+    fun callList(): MutableLiveData<List<User>> {
+        val users = MutableLiveData<List<User>>()
+
+        _loading.value = true
+        viewModelScope.launch {
+            try {
+                val userList = productRepository.callList()
+                users.postValue(userList)
+                _loading.value = false
+            } catch (e: Exception) {
+                _loading.value = false
+            }
+        }
+        return users
+    }
+
+    fun buyList(): MutableLiveData<List<Product>> {
+        val products = MutableLiveData<List<Product>>()
+
+        _loading.value = true
+        viewModelScope.launch {
+            try {
+                val productList = productRepository.buyList()
+                products.postValue(productList)
+                _loading.value = false
+            } catch (e: Exception) {
+                _loading.value = false
+            }
+
+        }
+        return products
     }
 }
