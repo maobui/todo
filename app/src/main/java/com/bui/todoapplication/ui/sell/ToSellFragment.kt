@@ -1,4 +1,4 @@
-package com.bui.todoapplication
+package com.bui.todoapplication.ui.sell
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -7,27 +7,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.bui.todoapplication.databinding.FragmentToBuyBinding
+import com.bui.todoapplication.databinding.FragmentToSellBinding
 import com.bui.todoapplication.model.Product
-import kotlinx.android.synthetic.main.fragment_to_buy.*
+import com.bui.todoapplication.ui.ProductAdapter
+import kotlinx.android.synthetic.main.fragment_to_call.*
+import kotlinx.android.synthetic.main.fragment_to_sell.*
 import java.util.ArrayList
 
-internal const val ARG_PRODUCTS = "PRODUCT_LIST"
+internal const val ARG_PRODUCTS_LOCAL = "PRODUCT_LIST"
 
-class ToBuyFragment : Fragment() {
-    private final val TAG = ToBuyFragment::class.java.simpleName
+class ToSellFragment : Fragment() {
+    private final val TAG = ToSellFragment::class.java.simpleName
 
-    private var _binding: FragmentToBuyBinding? = null
+    private var _binding: FragmentToSellBinding? = null
     private var products: List<Product>? = mutableListOf()
 
-    private val binding: FragmentToBuyBinding
+    private val binding: FragmentToSellBinding
         get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            products = it.getParcelableArrayList(ARG_PRODUCTS);
+            products = it.getParcelableArrayList(ARG_PRODUCTS_LOCAL)
         }
     }
 
@@ -36,7 +37,7 @@ class ToBuyFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentToBuyBinding.inflate(inflater, container, false)
+        _binding = FragmentToSellBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -46,16 +47,11 @@ class ToBuyFragment : Fragment() {
         initView()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun initView() {
-        recyclerView_products_buy.run {
+        recyclerView_products_sell.run {
             val adapter = ProductAdapter()
-            this.adapter = adapter
             setHasFixedSize(true)
+            this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
             adapter.submitList(products)
         }
@@ -64,9 +60,10 @@ class ToBuyFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(products: List<Product>) =
-            ToBuyFragment().apply {
+            ToSellFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelableArrayList(ARG_PRODUCTS, products as ArrayList<out Parcelable>)
+                    putParcelableArrayList(ARG_PRODUCTS_LOCAL,
+                        products as ArrayList<out Parcelable>)
                 }
             }
     }

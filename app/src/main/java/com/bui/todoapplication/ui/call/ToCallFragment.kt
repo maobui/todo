@@ -1,33 +1,36 @@
-package com.bui.todoapplication
+package com.bui.todoapplication.ui.call
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bui.todoapplication.databinding.FragmentToSellBinding
-import com.bui.todoapplication.model.Product
+import com.bui.todoapplication.databinding.FragmentToCallBinding
+import com.bui.todoapplication.model.User
 import kotlinx.android.synthetic.main.fragment_to_call.*
-import kotlinx.android.synthetic.main.fragment_to_sell.*
 import java.util.ArrayList
 
-internal const val ARG_PRODUCTS_LOCAL = "PRODUCT_LIST"
 
-class ToSellFragment : Fragment() {
-    private final val TAG = ToSellFragment::class.java.simpleName
+internal const val ARG_USERS = "USER_LIST"
 
-    private var _binding: FragmentToSellBinding? = null
-    private var products: List<Product>? = mutableListOf()
+class ToCallFragment : Fragment() {
+    private final val TAG = ToCallFragment::class.java.simpleName
 
-    private val binding: FragmentToSellBinding
+    private var _binding: FragmentToCallBinding? = null
+    private val binding
         get() = _binding!!
+    private var users: List<User> = mutableListOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            products = it.getParcelableArrayList(ARG_PRODUCTS_LOCAL)
+            users = it.getParcelableArrayList<User>(ARG_USERS)!!
+
+            Log.d(TAG, "users : $users")
         }
     }
 
@@ -36,7 +39,7 @@ class ToSellFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentToSellBinding.inflate(inflater, container, false)
+        _binding = FragmentToCallBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -46,23 +49,27 @@ class ToSellFragment : Fragment() {
         initView()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initView() {
-        recyclerView_products_sell.run {
-            val adapter = ProductAdapter()
+        recyclerView_users.run {
+            val adapter = UserAdapter()
             setHasFixedSize(true)
             this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
-            adapter.submitList(products)
+            adapter.submitList(users)
         }
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(products: List<Product>) =
-            ToSellFragment().apply {
+        fun newInstance(users: List<User>) =
+            ToCallFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelableArrayList(ARG_PRODUCTS_LOCAL,
-                        products as ArrayList<out Parcelable>)
+                    putParcelableArrayList(ARG_USERS, users as ArrayList<out Parcelable>)
                 }
             }
     }

@@ -1,4 +1,4 @@
-package com.bui.todoapplication
+package com.bui.todoapplication.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

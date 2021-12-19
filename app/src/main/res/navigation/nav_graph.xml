@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.bui.todoapplication.MainFragment"
+        android:name="com.bui.todoapplication.ui.main.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
         <action
@@ -22,17 +22,17 @@
     </fragment>
     <fragment
         android:id="@+id/toCallFragment"
-        android:name="com.bui.todoapplication.ToCallFragment"
+        android:name="com.bui.todoapplication.ui.call.ToCallFragment"
         android:label="fragment_to_call"
         tools:layout="@layout/fragment_to_call" />
     <fragment
         android:id="@+id/toBuyFragment"
-        android:name="com.bui.todoapplication.ToBuyFragment"
+        android:name="com.bui.todoapplication.ui.buy.ToBuyFragment"
         android:label="fragment_to_buy"
         tools:layout="@layout/fragment_to_buy" />
     <fragment
         android:id="@+id/toSellFragment"
-        android:name="com.bui.todoapplication.ToSellFragment"
+        android:name="com.bui.todoapplication.ui.sell.ToSellFragment"
         android:label="fragment_to_sell"
         tools:layout="@layout/fragment_to_sell" />
 </navigation>

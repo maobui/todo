@@ -1,11 +1,11 @@
-package com.bui.todoapplication
+package com.bui.todoapplication.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bui.todoapplication.databinding.ActivityMainBinding
-import com.bui.todoapplication.remote.ApiBuilder
-import com.bui.todoapplication.remote.TodoApi
+import com.bui.todoapplication.viewmodel.MainViewModel
+import com.bui.todoapplication.viewmodel.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private final val TAG: String = MainActivity::class.java.simpleName

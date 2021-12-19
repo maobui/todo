@@ -1,7 +1,8 @@
-package com.bui.todoapplication
+package com.bui.todoapplication.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.bui.todoapplication.repository.ProductRepository
 import com.bui.todoapplication.local.TodoRoomDatabase
 import com.bui.todoapplication.model.Product
 import com.bui.todoapplication.model.User
